@@ -24,9 +24,9 @@ Create a project at [supabase.com](https://supabase.com), then copy:
 - Project URL
 - `anon` public API key
 
-Also enable anonymous sign-in in Supabase:
+Enable email auth in Supabase:
 
-- `Authentication -> Providers -> Anonymous -> Enable`
+- `Authentication -> Providers -> Email -> Enable`
 
 ### 2) Set env vars
 
@@ -35,11 +35,7 @@ Create `.env.local`:
 ```bash
 VITE_SUPABASE_URL=your_project_url
 VITE_SUPABASE_ANON_KEY=your_public_anon_key
-# Optional fallback only:
-# VITE_SUPABASE_USER_ID=your_user_uuid
 ```
-
-`VITE_SUPABASE_USER_ID` is optional and only used as a fallback if no auth user is available.
 
 ### 3) Run migration + seed
 
@@ -52,7 +48,7 @@ in Supabase SQL editor.
 
 ## Notes
 
-- If Supabase env/config is missing, the app falls back to local mock snapshot data.
+- If Supabase env/config is missing, auth/data access is unavailable until env vars are configured.
 - Home, Ledger, and Reports now read from the shared finance repository instead of inline constants.
 
 ## AI analyze endpoint (Step 4 partial)
@@ -67,3 +63,17 @@ GEMINI_MODEL=gemini-2.0-flash
 ```
 
 Quick Add calls `/api/ai/analyze` first and falls back to local parsing if AI is unavailable or low-confidence.
+
+## Authentication flow
+
+- App now requires user login (`/auth`) before accessing finance screens.
+- Sign-up and sign-in use Supabase email/password auth.
+- All DB reads/writes run under authenticated `auth.uid()` to match strict RLS.
+
+## Security hardening
+
+After deploying auth:
+
+1. Disable anonymous auth provider in Supabase.
+2. Run this migration in Supabase SQL editor:
+   - `supabase/migrations/20260227042000_harden_auth_rls.sql`

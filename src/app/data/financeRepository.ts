@@ -3,8 +3,6 @@ import { getMonthKey } from "../domain/finance";
 import { mockFinanceSnapshot } from "./mockFinanceData";
 import { getSupabaseClient } from "../../lib/supabase";
 
-const FALLBACK_USER_ID = "00000000-0000-0000-0000-000000000001";
-
 interface CategoryRow {
   slug: string;
   label: string;
@@ -55,14 +53,10 @@ function asNumber(value: unknown): number {
   return 0;
 }
 
-function getEnvUserId(): string {
-  return (import.meta.env.VITE_SUPABASE_USER_ID as string | undefined) ?? FALLBACK_USER_ID;
-}
-
 async function getActiveUserId(): Promise<string | null> {
   const client = getSupabaseClient();
   if (!client) {
-    return getEnvUserId();
+    return null;
   }
 
   const userRes = await client.auth.getUser();
@@ -70,12 +64,7 @@ async function getActiveUserId(): Promise<string | null> {
     return userRes.data.user.id;
   }
 
-  const anonRes = await client.auth.signInAnonymously();
-  if (anonRes.data.user?.id) {
-    return anonRes.data.user.id;
-  }
-
-  return getEnvUserId();
+  return null;
 }
 
 async function bootstrapUserFinance(userId: string): Promise<void> {
@@ -109,13 +98,21 @@ async function getFinanceSnapshotInternal(bootstrapAttempted: boolean): Promise<
   const client = getSupabaseClient();
 
   if (!client) {
-    return mockFinanceSnapshot;
+    return {
+      ...mockFinanceSnapshot,
+      categories: [],
+      transactions: [],
+    };
   }
 
   const monthKey = getMonthKey();
   const userId = await getActiveUserId();
   if (!userId) {
-    return mockFinanceSnapshot;
+    return {
+      ...mockFinanceSnapshot,
+      categories: [],
+      transactions: [],
+    };
   }
 
   const [categoriesRes, transactionsRes, budgetRes] = await Promise.all([
@@ -138,7 +135,11 @@ async function getFinanceSnapshotInternal(bootstrapAttempted: boolean): Promise<
   ]);
 
   if (categoriesRes.error || transactionsRes.error || budgetRes.error) {
-    return mockFinanceSnapshot;
+    return {
+      ...mockFinanceSnapshot,
+      categories: [],
+      transactions: [],
+    };
   }
 
   const categoriesRows = (categoriesRes.data ?? []) as CategoryRow[];

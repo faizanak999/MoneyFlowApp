@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   X,
   Pencil,
+  LogOut,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { BudgetSheet } from "./BudgetSheet";
@@ -21,6 +22,7 @@ import {
 import { getCategoryIcon } from "../domain/categoryIcons";
 import { parseQuickAddExpense } from "../domain/quickAdd";
 import { analyzeExpenseText } from "../data/aiClient";
+import { useAuth } from "../auth/AuthProvider";
 
 export function HomeScreen() {
   const [expenseText, setExpenseText] = useState("");
@@ -32,6 +34,7 @@ export function HomeScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { snapshot, saveBudget, addTransaction } = useFinanceData();
+  const { signOut } = useAuth();
 
   const monthKey = getMonthKey();
   const prevMonthKey = getMonthKey(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1));
@@ -167,8 +170,20 @@ export function HomeScreen() {
             My Finances
           </h1>
         </div>
-        <div className="w-10 h-10 rounded-[10px] overflow-hidden">
-          <AppIcon />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              void signOut();
+            }}
+            className="w-9 h-9 rounded-[10px] bg-white/5 border border-white/10 flex items-center justify-center text-[#8A8494] hover:text-white transition-colors"
+            aria-label="Sign out"
+            title="Sign out"
+          >
+            <LogOut size={16} />
+          </button>
+          <div className="w-10 h-10 rounded-[10px] overflow-hidden">
+            <AppIcon />
+          </div>
         </div>
       </div>
 
