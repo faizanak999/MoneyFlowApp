@@ -21,8 +21,9 @@ const suggestedPrompts = [
   "Where can I cut costs?",
 ];
 
-function fallbackAssistantAnswer(question: string): string {
-  return `I could not reach the AI service right now. Please try again in a moment. Your question was: "${question}".`;
+function fallbackAssistantAnswer(question: string, error?: string): string {
+  const suffix = error ? `\n\nReason: ${error}` : "";
+  return `I could not reach the AI service right now. Please try again in a moment. Your question was: "${question}".${suffix}`;
 }
 
 export function AIAssistantScreen() {
@@ -92,7 +93,7 @@ export function AIAssistantScreen() {
     const aiMsg: Message = {
       id: Date.now() + 1,
       role: "assistant",
-      content: aiResult.ok ? aiResult.answer : fallbackAssistantAnswer(trimmed),
+      content: aiResult.ok ? aiResult.answer : fallbackAssistantAnswer(trimmed, aiResult.error),
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
 

@@ -39,11 +39,36 @@ function getAssistantPrompt(payload: ChatPayload): string {
 }
 
 function extractTextResponse(data: any): string {
-  const candidate = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (typeof candidate !== "string") {
+  const parts = data?.candidates?.[0]?.content?.parts;
+  if (!Array.isArray(parts)) {
     return "";
   }
-  return candidate.trim();
+
+  const text = parts
+    .map((part: any) => (typeof part?.text === "string" ? part.text : ""))
+    .join("\n")
+    .trim();
+
+  return text;
+}
+
+function parseBody(rawBody: unknown): ChatPayload {
+  if (rawBody && typeof rawBody === "object") {
+    return rawBody as ChatPayload;
+  }
+
+  if (typeof rawBody === "string") {
+    try {
+      const parsed = JSON.parse(rawBody) as ChatPayload;
+      if (parsed && typeof parsed === "object") {
+        return parsed;
+      }
+    } catch {
+      return {};
+    }
+  }
+
+  return {};
 }
 
 export default async function handler(req: any, res: any): Promise<void> {
@@ -58,7 +83,7 @@ export default async function handler(req: any, res: any): Promise<void> {
     return;
   }
 
-  const body = (req.body || {}) as ChatPayload;
+  const body = parseBody(req.body);
   const question = (body.question || "").trim();
   if (!question) {
     json(res, 400, { error: "question is required" });
