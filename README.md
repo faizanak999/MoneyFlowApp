@@ -51,9 +51,11 @@ in Supabase SQL editor.
 - If Supabase env/config is missing, auth/data access is unavailable until env vars are configured.
 - Home, Ledger, and Reports now read from the shared finance repository instead of inline constants.
 
-## AI analyze endpoint (Step 4 partial)
+## AI endpoints
 
-- Vercel function route: `api/ai/analyze.ts`
+- Vercel function routes:
+  - `api/ai/analyze.ts` for quick-add extraction/categorization
+  - `api/ai/chat.ts` for assistant Q&A over your finance context
 - Required server env var (Vercel project settings):
 
 ```bash
@@ -63,6 +65,7 @@ GEMINI_MODEL=gemini-2.0-flash
 ```
 
 Quick Add calls `/api/ai/analyze` first and falls back to local parsing if AI is unavailable or low-confidence.
+Assistant calls `/api/ai/chat` and answers based on current finance context.
 
 ## Authentication flow
 
