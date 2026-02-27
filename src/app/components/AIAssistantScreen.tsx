@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { askFinanceAssistant } from "../data/chatClient";
 import { useFinanceData } from "../hooks/useFinanceData";
 import { getCategoryBreakdown, getMonthKey, getMonthlySpent } from "../domain/finance";
+import { isAiEnabled } from "../config/featureFlags";
 
 interface Message {
   id: number;
@@ -93,7 +94,11 @@ export function AIAssistantScreen() {
     const aiMsg: Message = {
       id: Date.now() + 1,
       role: "assistant",
-      content: aiResult.ok ? aiResult.answer : fallbackAssistantAnswer(trimmed, aiResult.error),
+      content: aiResult.ok
+        ? aiResult.answer
+        : !isAiEnabled
+          ? "AI assistant is temporarily disabled. You can still track expenses and use reports."
+          : fallbackAssistantAnswer(trimmed, aiResult.error),
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
 
@@ -113,8 +118,10 @@ export function AIAssistantScreen() {
               AI Assistant
             </h1>
             <p className="text-[#30E48D] text-[12px] flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#30E48D] inline-block" />
-              Online
+              <span
+                className={`w-1.5 h-1.5 rounded-full inline-block ${isAiEnabled ? "bg-[#30E48D]" : "bg-[#F4C761]"}`}
+              />
+              {isAiEnabled ? "Online" : "Disabled"}
             </p>
           </div>
         </div>

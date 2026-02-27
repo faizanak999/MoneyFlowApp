@@ -1,3 +1,5 @@
+import { isAiEnabled } from "../config/featureFlags";
+
 export interface AnalyzeExpenseResponse {
   merchant: string;
   amount: number;
@@ -10,6 +12,10 @@ export async function analyzeExpenseText(input: {
   text: string;
   categories: Array<{ slug: string; label: string }>;
 }): Promise<{ ok: true; data: AnalyzeExpenseResponse } | { ok: false; error: string }> {
+  if (!isAiEnabled) {
+    return { ok: false, error: "AI is disabled by configuration" };
+  }
+
   try {
     const response = await fetch("/api/ai/analyze", {
       method: "POST",

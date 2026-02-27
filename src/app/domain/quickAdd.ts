@@ -8,7 +8,23 @@ export interface ParsedExpenseInput {
 }
 
 const categoryKeywords: Record<string, string[]> = {
-  food: ["food", "dinner", "lunch", "breakfast", "restaurant", "cafe", "coffee"],
+  food: [
+    "food",
+    "dinner",
+    "lunch",
+    "breakfast",
+    "restaurant",
+    "cafe",
+    "coffee",
+    "kfc",
+    "mcdonald",
+    "burger king",
+    "pizza",
+    "chipotle",
+    "starbucks",
+    "zomato",
+    "swiggy",
+  ],
   transport: ["uber", "taxi", "fuel", "gas", "petrol", "bus", "train", "transport"],
   shopping: ["amazon", "shopping", "store", "mall", "target"],
   bills: ["bill", "utility", "electric", "water", "internet", "phone"],
@@ -82,7 +98,14 @@ function extractMerchant(text: string): string {
     .trim();
 
   if (cleaned.length > 0) {
-    return normalizeLabel(cleaned.split(/\s+/).slice(0, 3).join(" "));
+    const merchantWords = cleaned
+      .split(/\s+/)
+      .filter((word) => !/^\d+(?:\.\d+)?$/.test(word))
+      .slice(0, 3)
+      .join(" ");
+    if (merchantWords) {
+      return normalizeLabel(merchantWords);
+    }
   }
 
   return "Expense";

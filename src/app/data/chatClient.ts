@@ -1,3 +1,5 @@
+import { isAiEnabled } from "../config/featureFlags";
+
 export async function askFinanceAssistant(input: {
   question: string;
   context: {
@@ -13,6 +15,10 @@ export async function askFinanceAssistant(input: {
     }>;
   };
 }): Promise<{ ok: true; answer: string } | { ok: false; error: string }> {
+  if (!isAiEnabled) {
+    return { ok: false, error: "AI is disabled by configuration" };
+  }
+
   try {
     const response = await fetch("/api/ai/chat", {
       method: "POST",

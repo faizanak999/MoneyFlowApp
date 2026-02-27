@@ -62,6 +62,8 @@ in Supabase SQL editor.
 GEMINI_API_KEY=your_gemini_api_key
 # Optional:
 GEMINI_MODEL=gemini-2.0-flash
+# Feature flag:
+# VITE_ENABLE_AI=false
 ```
 
 Quick Add calls `/api/ai/analyze` first and falls back to local parsing if AI is unavailable or low-confidence.

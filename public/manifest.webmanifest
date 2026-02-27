@@ -1,0 +1,17 @@
+{
+  "name": "FinFlow",
+  "short_name": "FinFlow",
+  "description": "Personal expense tracking and analysis app",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D0A0F",
+  "theme_color": "#0D0A0F",
+  "icons": [
+    {
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

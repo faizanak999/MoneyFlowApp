@@ -1,36 +1,9 @@
 import { Outlet } from "react-router";
 import { BottomNav } from "./BottomNav";
 import { useEffect } from "react";
-import svgPaths from "../../imports/svg-pwclppfmas";
-
-const APP_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><rect width="40" height="40" rx="8" fill="#CEF62E"/><path d="${svgPaths.p1dc30500}" fill="#0A080B"/></svg>`;
 
 function useAppMeta() {
   useEffect(() => {
-    // Favicon
-    const svgBlob = new Blob([APP_ICON_SVG], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(svgBlob);
-
-    let favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
-    if (!favicon) {
-      favicon = document.createElement("link");
-      favicon.rel = "icon";
-      document.head.appendChild(favicon);
-    }
-    favicon.type = "image/svg+xml";
-    favicon.href = url;
-
-    // Apple touch icon (data URI for compatibility)
-    const svgDataUri = `data:image/svg+xml,${encodeURIComponent(APP_ICON_SVG)}`;
-    let appleTouchIcon = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]');
-    if (!appleTouchIcon) {
-      appleTouchIcon = document.createElement("link");
-      appleTouchIcon.rel = "apple-touch-icon";
-      document.head.appendChild(appleTouchIcon);
-    }
-    appleTouchIcon.href = svgDataUri;
-
-    // Meta theme color
     let themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
     if (!themeColor) {
       themeColor = document.createElement("meta");
@@ -58,8 +31,6 @@ function useAppMeta() {
       appleMobileWebAppStatusBar.content = "black-translucent";
       document.head.appendChild(appleMobileWebAppStatusBar);
     }
-
-    return () => URL.revokeObjectURL(url);
   }, []);
 }
 
